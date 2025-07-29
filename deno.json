@@ -1,0 +1,18 @@
+{
+  "lint": {
+    "rules": {
+      "exclude": ["nuxt.config.ts", "node_modules/**"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "exclude": ["node_modules/**"]
+    }
+  },
+  "tasks": {
+    "lint": "deno lint",
+
+    "fmt": "deno fmt --check",
+    "typecheck": "deno check ./scripts/**/*.ts"
+  }
+}
