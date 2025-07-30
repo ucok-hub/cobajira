@@ -23,6 +23,7 @@
       </ul>
     </section>
     <section>
+      function add(a,b){return a+b}
       <h2>Pengalaman</h2>
       <ul>
         <li>
