@@ -1,0 +1,54 @@
+name: AI Code Optimize
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write          # agar bisa push commit
+  pull-requests: write     # agar bisa tulis review comment
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 1) Jalankan formatter/linter konvensional
+      - name: Run formatters
+        run: |
+          npm ci && npm run format     # contoh JavaScript
+          pip install black isort
+          black . && isort .
+      - name: Commit formatting fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto-format via CI"
+
+      # 2) Scan daftar file yang BERUBAH dalam PR
+      - id: diff
+        run: |
+          echo "FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+
+      # 3) Panggil GPT per-file & tulis saran
+      - name: AI suggest improvements
+        uses: kxxt/chatgpt-code-review@v1    # contoh marketplace action :contentReference[oaicite:0]{index=0}
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          files: ${{ steps.diff.outputs.FILES }}
+          mode: "suggest"                   # atau "commit"
+          system_prompt: |
+            Anda adalah linter gaya penulisan. 
+            Output harus TETAPKAN fungsi semantik 100%, 
+            hanya ubah format, penamaan, urutan non-logis, 
+            tambahkan komentar seperlunya.
+
+      # 4) Tambahkan komentar/patch ke PR
+      - name: Post suggestions
+        uses: reviewdog/action-suggester@v1  # inline suggestion reviewer :contentReference[oaicite:1]{index=1}
+        with:
+          tool_name: ai-opt
+          level: info
+          fail_on_error: false
