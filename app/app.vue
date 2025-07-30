@@ -2,7 +2,7 @@
   <div class="container">
     <header>
       <img class="profile-pic" src="/favicon.ico" alt="Profile" />
-      <h1>Rafif Nuraydin Adipratama</h1>
+      <h1>Rafif Nuraydin</h1>
       <p class="subtitle">Software Engineer | Web Developer</p>
     </header>
     <section>
